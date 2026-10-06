@@ -1,7 +1,8 @@
-import express from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 import cookieParser from "cookie-parser";
 import type { Pool } from "pg";
-import type { Config } from "./config.js";
+import { loadConfig, type Config } from "./config.js";
+import { createPool, migrate } from "./db.js";
 import { errorHandler, HttpError } from "./errors.js";
 import { requireAdmin } from "./auth.js";
 import { PostsRepo } from "./posts-repo.js";
@@ -49,3 +50,30 @@ export function createApp({ cfg, db, sendEmail, fetchImpl, now = () => new Date(
   app.use(errorHandler);
   return app;
 }
+
+let booted: Promise<ReturnType<typeof createApp>> | undefined;
+
+/** One pool and one migrate() per cold start. Importing this module does not connect. */
+function bootProductionApp() {
+  if (!booted) {
+    const db = createPool();
+    const app = createApp({ cfg: loadConfig(), db });
+    booted = migrate(db).then(() => app);
+  }
+  return booted;
+}
+
+// The Express preset loads this file (it imports express and matches a
+// recognized entry name). The Node runtime exits unless the default export is
+// a function or server. Routes stay on an inner app created after migrate()
+// so unit tests can import createApp without opening a database.
+const vercelApp = express();
+vercelApp.disable("x-powered-by");
+vercelApp.use((req: Request, res: Response, next: NextFunction) => {
+  return bootProductionApp()
+    .then((api) => api(req, res, next))
+    .catch(next);
+});
+vercelApp.use(errorHandler);
+
+export default vercelApp;

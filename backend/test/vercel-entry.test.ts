@@ -14,11 +14,30 @@ beforeAll(() => {
 });
 
 describe("vercel serverless entry", () => {
-  it("runs migrate on cold start and serves /api/health", async () => {
-    const { default: handler } = await import("../api/index.js");
-    expect(migrate).toHaveBeenCalledTimes(1);
-    const res = await request(handler as never).get("/api/health");
+  it("default-exports an app function, migrates once, and serves /api/health", async () => {
+    const { default: app } = await import("../src/app.js");
+    const { default: apiEntry } = await import("../api/index.js");
+
+    // Vercel accepts a function (Express apps are functions) or an http.Server.
+    // Express apps also expose listen(), which is the port-listener shape.
+    expect(typeof app).toBe("function");
+    expect(typeof app.listen).toBe("function");
+    expect(apiEntry).toBe(app);
+    expect(migrate).not.toHaveBeenCalled();
+
+    const res = await request(app).get("/api/health");
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ ok: true });
+    expect(migrate).toHaveBeenCalledTimes(1);
+
+    const again = await request(app).get("/api/health");
+    expect(again.status).toBe(200);
+    expect(again.body).toEqual({ ok: true });
+    expect(migrate).toHaveBeenCalledTimes(1);
+
+    const missing = await request(app).get("/api/nope");
+    expect(missing.status).toBe(404);
+    expect(missing.body).toEqual({ error: { code: "not_found", message: "No such endpoint" } });
+    expect(migrate).toHaveBeenCalledTimes(1);
   });
 });
