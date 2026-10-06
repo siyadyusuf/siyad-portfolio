@@ -64,9 +64,14 @@ function bootProductionApp() {
 }
 
 // The Express preset loads this file (it imports express and matches a
-// recognized entry name). The Node runtime exits unless the default export is
-// a function or server. Routes stay on an inner app created after migrate()
-// so unit tests can import createApp without opening a database.
+// recognized entry name) and sends every path here, including /api/health.
+// The Node runtime exits unless the default export is a function or server.
+// Routes stay on an inner app created after migrate() so unit tests can
+// import createApp without opening a database.
+//
+// Do not add an api/ serverless file. When any api/ function exists, Vercel
+// matches only that file's path (api/index.ts is exact /api) and returns its
+// own 404 for the rest of /api/*, so /api/health never reaches this app.
 const vercelApp = express();
 vercelApp.disable("x-powered-by");
 vercelApp.use((req: Request, res: Response, next: NextFunction) => {
