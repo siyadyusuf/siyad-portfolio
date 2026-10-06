@@ -4,9 +4,6 @@
   "functions": {
     "src/app.ts": {
       "includeFiles": "schema.sql"
-    },
-    "api/index.ts": {
-      "includeFiles": "schema.sql"
     }
   }
 }

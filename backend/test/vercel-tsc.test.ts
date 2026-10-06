@@ -14,9 +14,7 @@ describe("vercel typescript compile", () => {
   it("typechecks the Express and serverless entries through a temp tsconfig", () => {
     const temp = mkdtempSync(path.join(tmpdir(), "vercel-typescript-"));
     const configFile = path.join(temp, "tsconfig.json");
-    const files = ["src/app.ts", "src/server.ts", "api/index.ts", "src/vercel.ts"].map((file) =>
-      path.join(backend, file),
-    );
+    const files = ["src/app.ts", "src/server.ts"].map((file) => path.join(backend, file));
     writeFileSync(
       configFile,
       JSON.stringify({
