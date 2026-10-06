@@ -20,8 +20,8 @@ npm run build        # type-check + production build
 
 This app is its own Vercel project. `vercel.json` does two things:
 
-- Serves the SPA for client routes (`/blog`, `/blog/:slug`, `/admin`, and any other non-file path) by rewriting them to `/index.html`. Without that, a hard navigation is a platform 404.
-- Proxies `/api/:path*` to `https://siyad-portfolio-seven.vercel.app/api/:path*` so the browser stays on this origin (session cookie and CORS stay first-party). The `/api` prefix is kept because the Express app mounts its routes there.
+- Proxies `/api/:path*` to `https://siyad-portfolio-seven.vercel.app/api/:path*` so the browser stays on this origin (session cookie and CORS stay first-party). The `/api` prefix is kept because the Express app mounts its routes there. This rule is first.
+- Serves the SPA for every other path (`/blog`, `/blog/:slug`, `/admin`, …) by rewriting it to `/index.html`. Built files such as `/assets/*` are still served directly. Without the fallback, a hard navigation is a platform 404.
 
 Project settings:
 
