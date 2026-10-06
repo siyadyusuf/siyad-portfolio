@@ -17,5 +17,5 @@ Express 5 + TypeScript + PostgreSQL API for Siyad Yusuf's portfolio site.
 
 ## Deploy (Vercel + Neon, free tiers)
 - Database: create a free Neon Postgres project and put its connection string in `DATABASE_URL`.
-- API: `src/vercel.ts` is the serverless entry. In the combined repo, re-export it from `api/[...path].ts` and set the env vars from `.env.example` in the Vercel project. The table is created automatically on first request.
+- API: set the Vercel Root Directory to `backend`. `api/index.ts` re-exports `src/vercel.ts`, which opens the pool and runs `migrate()` once per cold start. `vercel.json` rewrites `/api/*` (including `/api/health`) to that function. Set the env vars from `.env.example`. `typescript` and the other packages `tsc --noEmit` needs are dependencies, so a production install can still build. The table is created automatically on first request.
 - Set `NODE_ENV=production` so the login cookie is `Secure`.
