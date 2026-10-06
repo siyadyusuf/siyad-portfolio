@@ -41,7 +41,11 @@ npm run dev            # http://localhost:5173
 
 ## Deploy notes
 
-Do not commit secrets. On Vercel set `DATABASE_URL`, `ADMIN_PASSWORD`, `SESSION_SECRET`, `RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`, and a read-only `GITHUB_TOKEN`. Nothing goes live without the owner's OK.
+Two Vercel projects. Do not commit secrets. Nothing goes live without the owner's OK.
+
+**Frontend** (`https://siyad-portfolio-2tfg.vercel.app`): Root Directory `frontend`, Framework Preset Vite. `frontend/vercel.json` rewrites client routes (`/blog`, `/blog/:slug`, `/admin`, …) to `index.html`, and proxies `/api/*` to the API host. Set `VITE_USE_MOCKS=false`. Leave `VITE_API_BASE` unset so the app calls same-origin `/api`. See `frontend/README.md`.
+
+**API**: Root Directory `backend`, Framework Preset Express. Set `DATABASE_URL`, `ADMIN_PASSWORD_HASH`, `SESSION_SECRET`, `RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`, and a read-only `GITHUB_TOKEN`. Set `NODE_ENV=production` so the login cookie is `Secure`. `CORS_ORIGIN` is only needed if the browser calls the API host directly.
 
 ## License
 

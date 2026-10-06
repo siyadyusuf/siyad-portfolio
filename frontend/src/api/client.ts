@@ -12,7 +12,10 @@ import type {
 } from './types'
 
 export const API_BASE: string = import.meta.env.VITE_API_BASE ?? '/api'
-/** Mocks are ON unless VITE_USE_MOCKS is explicitly "false". */
+/**
+ * Mocks are ON unless VITE_USE_MOCKS is explicitly "false".
+ * Production builds set that in `.env.production` so the bundle calls `/api`.
+ */
 export const USE_MOCKS: boolean = import.meta.env.VITE_USE_MOCKS !== 'false'
 
 export class ApiError extends Error {
