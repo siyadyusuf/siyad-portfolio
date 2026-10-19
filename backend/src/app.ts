@@ -1,4 +1,4 @@
-import express, { type NextFunction, type Request, type Response } from "express";
+import express, { type Express, type NextFunction, type Request, type Response } from "express";
 import cookieParser from "cookie-parser";
 import type { Pool } from "pg";
 import { loadConfig, type Config } from "./config.js";
@@ -27,17 +27,7 @@ export function createApp({ cfg, db, sendEmail, fetchImpl, now = () => new Date(
   app.use(express.json({ limit: "200kb" }));
   app.use(cookieParser());
 
-  if (cfg.corsOrigin) {
-    app.use((req, res, next) => {
-      res.set("Access-Control-Allow-Origin", cfg.corsOrigin!);
-      res.set("Access-Control-Allow-Credentials", "true");
-      res.set("Access-Control-Allow-Headers", "Content-Type");
-      res.set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-      res.set("Vary", "Origin");
-      if (req.method === "OPTIONS") return res.sendStatus(204);
-      next();
-    });
-  }
+  useCors(app, () => cfg.corsOrigin);
 
   const repo = new PostsRepo(db);
   app.get("/api/health", (_req, res) => res.json({ ok: true }));
@@ -53,27 +43,61 @@ export function createApp({ cfg, db, sendEmail, fetchImpl, now = () => new Date(
 
 let booted: Promise<ReturnType<typeof createApp>> | undefined;
 
-/** One pool and one migrate() per cold start. Importing this module does not connect. */
+// One pool per successful cold start. Importing this module does not connect.
+// A rejected boot is dropped so the next request can open a new pool and retry;
+// caching the rejection is what made one deadlock 500 every later request.
 function bootProductionApp() {
   if (!booted) {
-    const db = createPool();
-    const app = createApp({ cfg: loadConfig(), db });
-    booted = migrate(db).then(() => app);
+    booted = startProductionApp().catch((err) => {
+      booted = undefined;
+      throw err;
+    });
   }
   return booted;
+}
+
+async function startProductionApp() {
+  const cfg = loadConfig();
+  const db = createPool();
+  try {
+    await migrate(db);
+    return createApp({ cfg, db });
+  } catch (err) {
+    await db.end().catch(() => undefined);
+    throw err;
+  }
+}
+
+function useCors(app: Express, originFor: () => string | undefined) {
+  app.use((req, res, next) => {
+    const origin = originFor();
+    if (!origin) return next();
+    res.set("Access-Control-Allow-Origin", origin);
+    res.set("Access-Control-Allow-Credentials", "true");
+    res.set("Access-Control-Allow-Headers", "Content-Type");
+    res.set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.set("Vary", "Origin");
+    if (req.method === "OPTIONS") return res.sendStatus(204);
+    next();
+  });
 }
 
 // The Express preset loads this file (it imports express and matches a
 // recognized entry name) and sends every path here, including /api/health.
 // The Node runtime exits unless the default export is a function or server.
-// Routes stay on an inner app created after migrate() so unit tests can
-// import createApp without opening a database.
+// /api/health is answered before the pool opens. Other routes stay on an
+// inner app created after migrate() so unit tests can import createApp
+// without opening a database.
 //
 // Do not add an api/ serverless file. When any api/ function exists, Vercel
 // matches only that file's path (api/index.ts is exact /api) and returns its
 // own 404 for the rest of /api/*, so /api/health never reaches this app.
 const vercelApp = express();
 vercelApp.disable("x-powered-by");
+useCors(vercelApp, () => process.env.CORS_ORIGIN);
+vercelApp.get("/api/health", (_req, res) => {
+  res.json({ ok: true });
+});
 vercelApp.use((req: Request, res: Response, next: NextFunction) => {
   return bootProductionApp()
     .then((api) => api(req, res, next))
