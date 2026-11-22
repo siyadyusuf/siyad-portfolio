@@ -10,7 +10,7 @@ export const PROFILE = {
   githubUser: 'siyadyusuf',
   /** Exact profile URLs from linktr.ee/siyadyusuf (__NEXT_DATA__ links), fetched 2026-10-06. Not on the resume. */
   instagram: 'https://www.instagram.com/siyadyusuf_',
-  tiktok: 'https://www.tiktok.com/@kingyusufff',
+  tiktok: 'https://www.tiktok.com/@yad2locked_',
   website: 'https://yourprinceisnotreal.net/',
   resumePdf: '/Siyad_Yusuf_Resume.pdf',
 }
@@ -29,20 +29,29 @@ export const EDUCATION: EducationItem[] = [
 
 export const COURSEWORK = ['Data Structures & Algorithms', 'Computer Systems', 'Formal Methods & Models', 'Object-Oriented Programming']
 
-/** Skill groups exactly as they appear on the resume (coursework is shown under Education). */
+/** Skill groups exactly as they appear on resume v2 (coursework is shown under Education). */
 export const SKILL_GROUPS: { group: string; items: string[] }[] = [
   {
-    group: 'Development',
-    items: ['Python', 'Java', 'JavaScript', 'TypeScript', 'React', 'Node.js', 'Express', 'HTML', 'CSS', 'PostgreSQL', 'Chrome Extensions (MV3)'],
+    group: 'Languages',
+    items: ['Python', 'Java', 'C', 'JavaScript', 'TypeScript', 'HTML', 'CSS', 'SQL'],
   },
-  { group: 'AI & APIs', items: ['xAI Grok API', 'ElevenLabs API', 'OpenAI API', 'REST APIs', 'JSON', 'Prompt Engineering'] },
-  { group: 'Tools', items: ['Git', 'GitHub', 'GitHub Actions', 'GitHub Pages', 'Cursor'] },
   {
-    group: 'Networking & Infra',
-    items: ['TCP/IP', 'Subnetting', 'VLANs', 'OPNsense Firewall', 'Proxmox Virtualization', 'VPN', 'Linux/Windows Server Admin'],
+    group: 'Frameworks & Data',
+    items: ['React', 'Node.js', 'Express', 'PostgreSQL', 'Chrome Extensions (MV3)', 'NumPy'],
   },
-  { group: 'IT Support', items: ['Help Desk & Desktop Support', 'Ticketing Systems', 'PC Hardware & Peripherals', 'Windows 10/11', 'BIOS/UEFI'] },
-  { group: 'Apple Ecosystem', items: ['macOS', 'iOS', 'iPadOS', 'Apple Hardware'] },
+  {
+    group: 'AI & ML',
+    items: [
+      'LLM Evaluation',
+      'Local LLMs (Ollama)',
+      'xAI Grok API',
+      'ElevenLabs API',
+      'OpenAI API',
+      'Prompt Engineering',
+      'REST APIs',
+    ],
+  },
+  { group: 'Tools', items: ['Git', 'GitHub', 'GitHub Actions', 'GitHub Pages', 'Cursor', 'Linux', 'Windows'] },
 ]
 
 export interface Project {
