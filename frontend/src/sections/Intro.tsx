@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, Code, Download, Globe, GraduationCap, Lightbulb, Mail } from 'lucide-react'
+import { BriefcaseBusiness, Code, FileText, Globe, GraduationCap, Lightbulb, Mail } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Monogram } from '../components/Layout'
 import { GithubIcon, InstagramIcon, LinkedinIcon, TiktokIcon } from '../components/icons'
@@ -177,9 +177,15 @@ export function Intro() {
         <a href={PROFILE.tiktok} target="_blank" rel="noopener noreferrer" className="btn-ghost size-9 p-0" aria-label="TikTok (opens in a new tab)" title="TikTok">
           <TiktokIcon className="size-4" />
         </a>
-        <a href={PROFILE.resumePdf} download="Siyad_Yusuf_Resume.pdf" className="btn-primary h-9 w-full px-3.5 sm:ml-auto sm:w-auto">
-          <Download className="size-4" aria-hidden="true" />
-          Download Resume
+        <a
+          href={PROFILE.resumePdf}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-primary h-9 w-full px-3.5 sm:ml-auto sm:w-auto"
+          aria-label="Resume (opens as a PDF in a new tab)"
+        >
+          <FileText className="size-4" aria-hidden="true" />
+          Resume
         </a>
       </div>
 

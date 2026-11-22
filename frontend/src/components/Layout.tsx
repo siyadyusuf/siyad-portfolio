@@ -1,4 +1,4 @@
-import { Download } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { USE_MOCKS } from '../api/client'
@@ -114,8 +114,14 @@ export function SiteHeader() {
           <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className="grid size-8 place-items-center rounded-md text-muted transition-colors hover:bg-zinc-900 hover:text-fg" aria-label="GitHub profile (opens in a new tab)">
             <GithubIcon className="size-4" />
           </a>
-          <a href={PROFILE.resumePdf} download="Siyad_Yusuf_Resume.pdf" className="btn-ghost h-8 px-2.5 text-xs">
-            <Download className="size-3.5" aria-hidden="true" />
+          <a
+            href={PROFILE.resumePdf}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-ghost h-8 px-2.5 text-xs"
+            aria-label="Resume (opens as a PDF in a new tab)"
+          >
+            <FileText className="size-3.5" aria-hidden="true" />
             Resume
           </a>
         </nav>
@@ -166,7 +172,13 @@ export function SiteFooter() {
           <div className={`${cell} sm:border-r sm:border-line`}>
             <dt className={label}>Resume</dt>
             <dd className={val}>
-              <a className="link-underline" href={PROFILE.resumePdf} download="Siyad_Yusuf_Resume.pdf">
+              <a
+                className="link-underline"
+                href={PROFILE.resumePdf}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Resume (opens as a PDF in a new tab)"
+              >
                 PDF
               </a>
             </dd>
